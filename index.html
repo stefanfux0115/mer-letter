@@ -1,61 +1,266 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>给 Mer 的信</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
+  :root {
+    --ink: #2b2b2b;
+    --paper: rgba(255,255,255,.90);
+    --paper2: rgba(255,255,255,.82);
+    --envelope: #f4f1e8;
+    --envelope2: #efe9dd;
+    --line: rgba(20,20,20,.14);
+    --shadow: rgba(0,0,0,.22);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
     margin: 0;
-    padding: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 22px 14px;
+    color: var(--ink);
+    font-family: "Noto Serif SC", "Songti SC", "STSong", "Times New Roman", serif;
+
+    /* Monet Water Lilies (public domain) */
     background-image: url("https://upload.wikimedia.org/wikipedia/commons/0/0c/Claude_Monet_-_Water_Lilies_-_1916.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: "Noto Serif SC", "STKaiti", "KaiTi", serif;
-}
+  }
 
-.overlay {
-    background: rgba(255, 255, 255, 0.82);
+  /* soften background a touch */
+  .scene {
+    width: min(880px, 96vw);
+    display: grid;
+    place-items: center;
+  }
+
+  .hint {
+    margin-top: 14px;
+    font-size: 13px;
+    opacity: .78;
+    letter-spacing: .4px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .stage {
+    position: relative;
+    width: min(720px, 92vw);
+    height: min(420px, 64vh);
+    display: grid;
+    place-items: center;
+  }
+
+  /* Letter sheet (slides out) */
+  .sheet {
+    position: absolute;
+    width: min(680px, 88vw);
+    height: auto;
+    max-height: min(75vh, 640px);
+    overflow: auto;
+    padding: 44px 46px;
+    background: var(--paper);
+    box-shadow: 0 22px 70px var(--shadow);
+    border: 1px solid rgba(0,0,0,.08);
+    transform: translateY(90px) scale(.98);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 800ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
     backdrop-filter: blur(6px);
-    padding: 60px 50px;
-    max-width: 800px;
-    line-height: 1.9;
-    font-size: 20px;
-    color: #2b2b2b;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-}
+  }
 
-.title {
-    font-size: 26px;
-    margin-bottom: 30px;
-    letter-spacing: 2px;
-}
-
-.content {
+  .sheet .content {
     white-space: pre-wrap;
-}
+    line-height: 1.95;
+    font-size: clamp(16px, 2.2vw, 20px);
+  }
 
-@media (max-width: 768px) {
-    .overlay {
-        padding: 40px 25px;
-        font-size: 18px;
+  /* Envelope */
+  .envelope-wrap {
+    position: absolute;
+    width: min(680px, 88vw);
+    height: 300px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    filter: drop-shadow(0 18px 55px rgba(0,0,0,.24));
+    transition: transform 500ms ease;
+  }
+
+  .envelope {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--envelope) 0%, var(--envelope2) 100%);
+    border: 1px solid rgba(0,0,0,.10);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* back flap line */
+  .envelope::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: 52%;
+    height: 1px;
+    background: rgba(0,0,0,.10);
+  }
+
+  /* top flap (triangle) */
+  .flap {
+    position: absolute;
+    left: 0; right: 0;
+    top: 0;
+    height: 58%;
+    transform-origin: top center;
+    transition: transform 850ms cubic-bezier(.2,.9,.2,1);
+  }
+  .flap::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 340px solid transparent;
+    border-right: 340px solid transparent;
+    border-top: 190px solid rgba(255,255,255,.0);
+  }
+  .flap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,.0) 65%);
+    opacity: .28;
+    pointer-events: none;
+  }
+
+  /* front triangles */
+  .front {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .front::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0; height: 0;
+    border-top: 150px solid transparent;
+    border-right: 340px solid rgba(255,255,255,.10);
+    border-bottom: 150px solid rgba(255,255,255,.0);
+  }
+  .front::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 0; height: 0;
+    border-top: 150px solid transparent;
+    border-left: 340px solid rgba(0,0,0,.04);
+    border-bottom: 150px solid rgba(255,255,255,.0);
+  }
+
+  /* subtle seam lines */
+  .seams {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .seams::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 1px;
+    height: 58%;
+    background: rgba(0,0,0,.10);
+    transform: translateX(-50%) rotate(0deg);
+  }
+  .seams::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(0,0,0,.10);
+  }
+
+  /* bottom printed text */
+  .stamp {
+    position: absolute;
+    right: 44px;
+    bottom: 26px;
+    text-align: right;
+    font-size: 16px;
+    letter-spacing: .6px;
+    opacity: .92;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  .stamp small {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    opacity: .85;
+    letter-spacing: .3px;
+  }
+
+  /* Open state */
+  .open .flap {
+    transform: rotateX(170deg);
+  }
+  .open .sheet {
+    transform: translateY(-42px) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .open .envelope-wrap {
+    transform: translateY(95px) scale(.98);
+    cursor: default;
+  }
+
+  /* Mobile triangle sizes */
+  @media (max-width: 760px) {
+    .envelope-wrap { height: 260px; }
+    .flap::before {
+      border-left-width: 46vw;
+      border-right-width: 46vw;
+      border-top-width: 150px;
     }
-}
+    .front::before {
+      border-right-width: 46vw;
+    }
+    .front::after {
+      border-left-width: 46vw;
+    }
+    .sheet { padding: 34px 26px; }
+    .stamp { right: 20px; bottom: 18px; font-size: 14px; }
+    .stamp small { font-size: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet, .flap, .envelope-wrap { transition: none; }
+  }
 </style>
 </head>
 
 <body>
-<div class="overlay">
-<div class="title">给 Mer 的信</div>
-<div class="content">Mer：
+  <div class="scene">
+    <div class="stage" id="stage">
+      <div class="sheet" id="sheet" aria-label="letter">
+        <div class="content">Mer：
 
 没想到这么快，就到了我们在一起的第一个情人节。
 
@@ -76,6 +281,43 @@ body {
 爱你  
 恩贤
 </div>
-</div>
+      </div>
+
+      <div class="envelope-wrap" id="envelope" role="button" aria-label="open envelope" tabindex="0">
+        <div class="envelope">
+          <div class="flap"></div>
+          <div class="front"></div>
+          <div class="seams"></div>
+          <div class="stamp">
+            The years that we go through
+            <small>Enxian &amp; Xi</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">轻触信封打开</div>
+  </div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const envelope = document.getElementById('envelope');
+  const hint = document.getElementById('hint');
+
+  function openIt() {
+    if (stage.classList.contains('open')) return;
+    stage.classList.add('open');
+    hint.style.opacity = '0';
+    setTimeout(()=> hint.style.display = 'none', 400);
+  }
+
+  envelope.addEventListener('click', openIt);
+  envelope.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openIt();
+    }
+  });
+</script>
 </body>
 </html>
