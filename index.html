@@ -16,6 +16,8 @@
     --envelope: #f4f1e8;
     --envelope2: #efe9dd;
     --shadow: rgba(0,0,0,.24);
+    --tape: rgba(238, 222, 170, .55);
+    --tape2: rgba(220, 210, 190, .55);
   }
 
   * { box-sizing: border-box; }
@@ -44,7 +46,7 @@
     padding: 10px 0 8px;
   }
 
-  /* Modal-like centered letter for "first glance" */
+  /* Centered letter modal */
   .sheet {
     position: fixed;
     left: 50%;
@@ -64,50 +66,129 @@
     border-radius: 10px;
   }
 
-  /* Collage background inside sheet (scrolls with sheet) */
+  /* Collage layer */
   .sheet .collage {
     position: absolute;
     inset: -26px;
-    height: 260%;
+    height: 250%;
     pointer-events: none;
     overflow: hidden;
   }
 
-  /* very light veil; keep text readable */
+  /* background scraps for more "dali collage" vibe */
+  .scrap {
+    position: absolute;
+    border-radius: 14px;
+    filter: blur(.2px) saturate(1.05);
+    opacity: .28;
+    mix-blend-mode: multiply;
+  }
+  .scrap.s1 {
+    width: 56%;
+    height: 22%;
+    left: -8%;
+    top: 10%;
+    transform: rotate(-6deg);
+    background: linear-gradient(135deg, rgba(255,210,120,.70), rgba(255,255,255,0));
+  }
+  .scrap.s2 {
+    width: 52%;
+    height: 20%;
+    right: -10%;
+    top: 42%;
+    transform: rotate(7deg);
+    background: linear-gradient(135deg, rgba(170,210,255,.70), rgba(255,255,255,0));
+  }
+  .scrap.s3 {
+    width: 60%;
+    height: 22%;
+    left: 8%;
+    top: 128%;
+    transform: rotate(4deg);
+    background: linear-gradient(135deg, rgba(210,190,255,.70), rgba(255,255,255,0));
+  }
+
+  /* light veil so text stays readable */
   .sheet .collage::after {
     content:"";
     position:absolute;
     inset:0;
     background:
-      radial-gradient(760px 360px at 15% 18%, rgba(255,255,255,.24), transparent 66%),
-      radial-gradient(700px 440px at 85% 26%, rgba(255,255,255,.20), transparent 70%),
+      radial-gradient(760px 360px at 15% 18%, rgba(255,255,255,.22), transparent 68%),
+      radial-gradient(700px 440px at 85% 26%, rgba(255,255,255,.18), transparent 72%),
       linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.10) 58%, rgba(255,255,255,.28) 100%);
     mix-blend-mode: screen;
-    opacity: .58;
+    opacity: .56;
   }
 
-  .cimg {
+  /* Cutout wrapper: white paper edge + slight rough clip */
+  .cutout {
     position: absolute;
     left: var(--x);
     top: var(--y);
     width: var(--s);
     transform: rotate(var(--r));
     opacity: var(--o);
-    filter: blur(.06px) saturate(1.12) contrast(1.08);
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.16);
+    padding: 10px;
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    border-radius: 12px;
+    /* "paper" micro texture */
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(0,0,0,.03), transparent 35%),
+      radial-gradient(circle at 80% 30%, rgba(0,0,0,.02), transparent 40%),
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(245,242,235,.92));
+    clip-path: polygon(var(--poly));
   }
 
-  .float { animation: drift 14s ease-in-out infinite; }
-  .f1 { animation-duration: 16s; }
-  .f2 { animation-duration: 18s; }
+  .cutout img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    clip-path: polygon(var(--poly2));
+    filter: saturate(1.06) contrast(1.04);
+  }
+
+  /* floating but subtle */
+  .float { animation: drift 18s ease-in-out infinite; }
+  .f1 { animation-duration: 20s; }
+  .f2 { animation-duration: 22s; }
 
   @keyframes drift {
     0%,100% { transform: translate3d(0,0,0) rotate(var(--r)); }
-    50% { transform: translate3d(10px,-8px,0) rotate(var(--r)); }
+    50% { transform: translate3d(6px,-5px,0) rotate(var(--r)); }
   }
 
-  .sheet .inner { position: relative; z-index: 2; }
+  /* some tape strips */
+  .cutout.tape::before {
+    content:"";
+    position:absolute;
+    width: 52%;
+    height: 16px;
+    left: 24%;
+    top: -6px;
+    background: linear-gradient(90deg, var(--tape), rgba(255,255,255,.0));
+    border-radius: 8px;
+    transform: rotate(-8deg);
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    opacity: .75;
+  }
+  .cutout.tape::after {
+    content:"";
+    position:absolute;
+    width: 38%;
+    height: 14px;
+    right: 10%;
+    bottom: -6px;
+    background: linear-gradient(90deg, var(--tape2), rgba(255,255,255,.0));
+    border-radius: 8px;
+    transform: rotate(10deg);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+    opacity: .55;
+  }
+
+  .sheet .inner { position: relative; z-index: 3; }
   .sheet .content {
     white-space: pre-wrap;
     line-height: 1.95;
@@ -232,7 +313,6 @@
     letter-spacing: .3px;
   }
 
-  /* Open state */
   .open .flap { transform: rotateX(170deg); }
   .open .sheet {
     opacity: 1;
@@ -245,7 +325,6 @@
     pointer-events: none;
   }
 
-  /* Prevent page scroll when modal open */
   body.lock { overflow: hidden; }
 
   @media (max-width: 760px) {
@@ -273,7 +352,11 @@
   <div class="scene">
     <div class="stage" id="stage">
       <div class="sheet" id="sheet" aria-label="letter">
-        <div class="collage" id="collage" aria-hidden="true"></div>
+        <div class="collage" id="collage" aria-hidden="true">
+          <div class="scrap s1"></div>
+          <div class="scrap s2"></div>
+          <div class="scrap s3"></div>
+        </div>
         <div class="inner">
           <div class="content">Mer：
 
@@ -323,7 +406,6 @@
   const sheet = document.getElementById('sheet');
   const collage = document.getElementById('collage');
 
-  // seeded RNG for stable layout
   function mulberry32(a) {
     return function() {
       var t = a += 0x6D2B79F5;
@@ -334,28 +416,64 @@
   }
   const rand = mulberry32(20260213);
 
+  function jitterPoly(points, j) {
+    // points: array of [x,y] in percent, add +/-j
+    return points.map(([x,y]) => {
+      const nx = Math.max(0, Math.min(100, x + (rand()*2-1)*j));
+      const ny = Math.max(0, Math.min(100, y + (rand()*2-1)*j));
+      return nx.toFixed(1) + '% ' + ny.toFixed(1) + '%';
+    }).join(', ');
+  }
+
   function makeCollage() {
-    // 60 tiles: each of 20 photos appears 3x
-    const repeats = 3;
-    const total = URIS.length * repeats;
-    const heightPct = 260; // match CSS
-    for (let k = 0; k < total; k++) {
+    // Reduced density: 32 cutouts, each photo used 1-2 times
+    const count = 32;
+    const heightPct = 250;
+
+    // grid to reduce overlap (4 columns x 8 rows)
+    const cols = 4, rows = 8;
+    const cellW = 100 / cols;
+    const cellH = heightPct / rows;
+
+    for (let k = 0; k < count; k++) {
       const i = k % URIS.length;
+      const wrap = document.createElement('div');
+      const tape = (rand() < 0.35);
+      wrap.className = 'cutout float f' + (k % 3) + (tape ? ' tape' : '');
+
+      // cell placement with jitter
+      const c = k % cols;
+      const r = Math.floor(k / cols);
+      const baseX = c * cellW + 2;
+      const baseY = r * cellH + 2;
+
+      const x = (baseX + rand()*6 - 3).toFixed(2) + '%';
+      const y = (baseY + rand()*6 - 3).toFixed(2) + '%';
+
+      const s = (rand() * 10 + 22).toFixed(2) + '%'; // 22-32%
+      const rot = ((rand() * 12) - 6).toFixed(2) + 'deg';
+      const op = (rand() * 0.10 + 0.34).toFixed(2); // 0.34-0.44
+
+      // rough-ish clip polygons (wrapper & inner slightly different)
+      const base = [[4,8],[96,4],[98,46],[92,96],[8,98],[2,56]];
+      const poly1 = jitterPoly(base, 3.8);
+      const poly2 = jitterPoly([[6,10],[94,6],[96,46],[90,94],[10,96],[4,58]], 3.0);
+
+      wrap.style.setProperty('--x', x);
+      wrap.style.setProperty('--y', y);
+      wrap.style.setProperty('--s', s);
+      wrap.style.setProperty('--r', rot);
+      wrap.style.setProperty('--o', op);
+      wrap.style.setProperty('--poly', poly1);
+      wrap.style.setProperty('--poly2', poly2);
+
+      wrap.style.zIndex = String(10 + Math.floor(rand()*40));
+
       const img = document.createElement('img');
-      img.className = 'cimg float f' + (k % 3);
       img.src = URIS[i];
-      // distribute across a wide field; allow some off-edge
-      const x = (rand() * 110 - 10).toFixed(2) + '%';
-      const y = (rand() * (heightPct + 30) - 15).toFixed(2) + '%';
-      const s = (rand() * 18 + 20).toFixed(2) + '%'; // smaller, denser
-      const r = ((rand() * 14) - 7).toFixed(2) + 'deg';
-      const o = (rand() * 0.10 + 0.30).toFixed(2); // 0.30 - 0.40
-      img.style.setProperty('--x', x);
-      img.style.setProperty('--y', y);
-      img.style.setProperty('--s', s);
-      img.style.setProperty('--r', r);
-      img.style.setProperty('--o', o);
-      collage.appendChild(img);
+      img.alt = '';
+      wrap.appendChild(img);
+      collage.appendChild(wrap);
     }
   }
 
@@ -367,8 +485,8 @@
     document.body.classList.add('lock');
     hint.style.opacity = '0';
     setTimeout(()=> hint.style.display = 'none', 400);
-    // ensure letter starts at top each time
-    setTimeout(()=> { sheet.scrollTop = 0; }, 0);
+    // start at top of letter
+    sheet.scrollTop = 0;
   }
 
   envelope.addEventListener('click', openIt);
